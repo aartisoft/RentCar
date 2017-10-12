@@ -1,0 +1,430 @@
+<!DOCTYPE html><!-- 
+Template Name: Metronic - Responsive Admin Dashboard Template build with Twitter Bootstrap 4
+Version: 5.0.3
+Author: KeenThemes
+Website: http://www.keenthemes.com/
+Contact: support@keenthemes.com
+Follow: www.twitter.com/keenthemes
+Dribbble: www.dribbble.com/keenthemes
+Like: www.facebook.com/keenthemes
+Purchase: http://themeforest.net/item/metronic-responsive-admin-dashboard-template/4021469?ref=keenthemes
+Renew Support: http://themeforest.net/item/metronic-responsive-admin-dashboard-template/4021469?ref=keenthemes
+License: You must have a valid license purchased only from themeforest(the above link) in order to legally use the theme for your project.
+-->
+<html lang="en" >
+	<!-- begin::Head -->
+	<head>
+		<meta charset="utf-8" />
+		<title>
+			{% block head_title %}
+				RentCar Easy
+				{% endblock head_title %}
+		</title>
+		<meta name="description" content="Latest updates and statistic charts">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<!--begin::Web font -->
+		<script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.16/webfont.js"></script>
+		<script>
+          WebFont.load({
+            google: {"families":["Poppins:300,400,500,600,700","Roboto:300,400,500,600,700"]},
+            active: function() {
+                sessionStorage.fonts = true;
+            }
+          });
+		</script>
+		<!--end::Web font -->
+		<!--begin::Base Styles -->
+		<!--begin::Page Vendors -->
+
+		{% comment %} add bootstrap {% endcomment %}
+		{% comment %} <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+		{% endcomment %}
+		{% load static %} 
+
+		<link href=" {% static "assets/vendors/custom/fullcalendar/fullcalendar.bundle.css" %}" rel="stylesheet" type="text/css" />
+		<!--end::Page Vendors -->
+		<link href=" {% static "assets/vendors/base/vendors.bundle.css" %} " rel="stylesheet" type="text/css" />
+		<link href="{% static "assets/demo/default/base/style.bundle.css" %}" rel="stylesheet" type="text/css" />
+		<!--end::Base Styles -->
+	
+		<link rel="shortcut icon" href=" {% static "assets/demo/default/media/img/logo/favicon.ico" %}"/>
+	</head>
+	<!-- end::Head -->
+	<!-- end::Body -->
+	<body class="m-page--fluid m--skin- m-content--skin-light2 m-header--fixed m-header--fixed-mobile m-aside-left--enabled m-aside-left--skin-dark m-aside-left--offcanvas m-footer--push m-aside--offcanvas-default"  >
+		<!-- begin:: Page -->
+		<div class="m-grid m-grid--hor m-grid--root m-page">
+			<!-- BEGIN: Header -->
+			<header class="m-grid__item    m-header "  data-minimize-offset="200" data-minimize-mobile-offset="200" >
+				<div class="m-container m-container--fluid m-container--full-height">
+					<div class="m-stack m-stack--ver m-stack--desktop">
+						<!-- BEGIN: Brand -->
+						<div class="m-stack__item m-brand  m-brand--skin-dark ">
+							<div class="m-stack m-stack--ver m-stack--general">
+								<div class="m-stack__item m-stack__item--middle m-brand__logo">
+									<a href="/" class="m-brand__logo-wrapper">
+										{% comment %} <img alt="" src=" {% static "assets/demo/default/media/img/logo/logo_default_dark.png" %}"/> {% endcomment %}
+										<img alt="" src=" {% static "assets/demo/default/media/img/logo/logo (2).png" %}"/>
+
+									</a>
+								</div>
+								<div class="m-stack__item m-stack__item--middle m-brand__tools">
+									<!-- BEGIN: Left Aside Minimize Toggle -->
+									<a href="javascript:;" id="m_aside_left_minimize_toggle" class="m-brand__icon m-brand__toggler m-brand__toggler--left m--visible-desktop-inline-block">
+										<span></span>
+									</a>
+									<!-- END -->
+									<!-- BEGIN: Responsive Aside Left Menu Toggler -->
+									<a href="javascript:;" id="m_aside_left_offcanvas_toggle" class="m-brand__icon m-brand__toggler m-brand__toggler--left m--visible-tablet-and-mobile-inline-block">
+										<span></span>
+									</a>
+									<!-- END -->
+									<!-- BEGIN: Responsive Header Menu Toggler -->
+									<a id="m_aside_header_menu_mobile_toggle" href="javascript:;" class="m-brand__icon m-brand__toggler m--visible-tablet-and-mobile-inline-block">
+										<span></span>
+									</a>
+									<!-- END -->
+									<!-- BEGIN: Topbar Toggler -->
+									<a id="m_aside_header_topbar_mobile_toggle" href="javascript:;" class="m-brand__icon m--visible-tablet-and-mobile-inline-block">
+										<i class="flaticon-more"></i>
+									</a>
+									<!-- BEGIN: Topbar Toggler -->
+								</div>
+							</div>
+						</div>
+						<!-- END: Brand -->
+						<div class="m-stack__item m-stack__item--fluid m-header-head" id="m_header_nav">
+							<!-- BEGIN: Horizontal Menu -->
+							<button class="m-aside-header-menu-mobile-close  m-aside-header-menu-mobile-close--skin-dark " id="m_aside_header_menu_mobile_close_btn">
+								<i class="la la-close"></i>
+							</button>
+							<div id="m_header_menu" class="m-header-menu m-aside-header-menu-mobile m-aside-header-menu-mobile--offcanvas  m-header-menu--skin-light m-header-menu--submenu-skin-light m-aside-header-menu-mobile--skin-dark m-aside-header-menu-mobile--submenu-skin-dark "  >
+								<ul class="m-menu__nav  m-menu__nav--submenu-arrow ">
+									<li class="m-menu__item  m-menu__item--submenu m-menu__item--rel"  data-menu-submenu-toggle="click" data-redirect="true" aria-haspopup="true">
+										<a  href="#" class="m-menu__link m-menu__toggle">
+											<i class="m-menu__link-icon flaticon-add"></i>
+											<span class="m-menu__link-text">
+												Acciones
+											</span>
+											<i class="m-menu__hor-arrow la la-angle-down"></i>
+											<i class="m-menu__ver-arrow la la-angle-right"></i>
+										</a>
+										<div class="m-menu__submenu m-menu__submenu--classic m-menu__submenu--left">
+											<span class="m-menu__arrow m-menu__arrow--adjust"></span>
+											<ul class="m-menu__subnav">
+												<li class="m-menu__item "  aria-haspopup="true">
+													<a  href="/reservaciones" class="m-menu__link ">
+														<i class="m-menu__link-icon flaticon-diagram"></i>
+														<span class="m-menu__link-text">
+															Ver Reservacion
+														</span>
+													</a>
+												</li>
+												<li class="m-menu__item "  data-redirect="true" aria-haspopup="true">
+													<a  href="/vehiculos" class="m-menu__link ">
+														<i class="m-menu__link-icon flaticon-business"></i>
+														<span class="m-menu__link-title">
+															<span class="m-menu__link-wrap">
+																<span class="m-menu__link-text">
+																	Ver Lista de Vehiculos
+																</span>
+																<span class="m-menu__link-badge">
+														
+																</span>
+															</span>
+														</span>
+													</a>
+												</li>
+												<li class="m-menu__item  m-menu__item--submenu"  data-menu-submenu-toggle="hover" data-redirect="true" aria-haspopup="true">
+													<a  href="/clientes/create" class="m-menu__link m-menu__toggle">
+														<i class="m-menu__link-icon flaticon-users"></i>
+														<span class="m-menu__link-text">
+															Agregar Clientes
+														</span>
+														
+													</a>
+												
+												</li>
+												
+												<li class="m-menu__item "  data-redirect="true" aria-haspopup="true">
+													<a  href="/modelos/create" class="m-menu__link ">
+														<i class="m-menu__link-icon flaticon-file"></i>
+														<span class="m-menu__link-text">
+															Agregar Modelos
+														</span>
+													</a>
+												</li>
+												
+
+											
+
+
+											</ul>
+										</div>
+									</li>
+									<li class="m-menu__item  m-menu__item--submenu m-menu__item--rel"  data-menu-submenu-toggle="click" data-redirect="true" aria-haspopup="true">
+										<a  href="#" class="m-menu__link m-menu__toggle">
+											<i class="m-menu__link-icon flaticon-line-graph"></i>
+											<span class="m-menu__link-text">
+												Reportes
+											</span>
+											<i class="m-menu__hor-arrow la la-angle-down"></i>
+											<i class="m-menu__ver-arrow la la-angle-right"></i>
+										</a>
+										
+									</li>
+						
+								</ul>
+							</div>
+							<!-- END: Horizontal Menu -->
+							<!-- BEGIN: Topbar -->
+
+							<!-- END: Topbar -->
+
+						</div>
+					</div>
+				</div>
+			</header>
+			<!-- END: Header -->
+			<!-- begin::Body -->
+			<div class="m-grid__item m-grid__item--fluid m-grid m-grid--ver-desktop m-grid--desktop m-body">
+				<!-- BEGIN: Left Aside -->
+				<button class="m-aside-left-close  m-aside-left-close--skin-dark " id="m_aside_left_close_btn">
+					<i class="la la-close"></i>
+				</button>
+				<div id="m_aside_left" class="m-grid__item	m-aside-left  m-aside-left--skin-dark ">
+					<!-- BEGIN: Aside Menu -->
+					<div 
+		id="m_ver_menu" 
+		class="m-aside-menu  m-aside-menu--skin-dark m-aside-menu--submenu-skin-dark " 
+		data-menu-vertical="true"
+		 data-menu-scrollable="false" data-menu-dropdown-timeout="500"  
+		>
+						<ul class="m-menu__nav  m-menu__nav--dropdown-submenu-arrow ">
+							<li class="m-menu__item  m-menu__item--active" aria-haspopup="true" >
+								<a  href="/" class="m-menu__link ">
+									<i class="m-menu__link-icon flaticon-line-graph"></i>
+									<span class="m-menu__link-title">
+										<span class="m-menu__link-wrap">
+											<span class="m-menu__link-text">
+												Dashboard
+											</span>
+										
+										</span>
+									</span>
+								</a>
+							</li>
+							<li class="m-menu__section">
+								<h4 class="m-menu__section-text">
+									Menu
+								</h4>
+								<i class="m-menu__section-icon flaticon-more-v3"></i>
+						
+
+							</li>
+
+							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
+								
+								
+
+
+									<a  href="/reservaciones" class="m-menu__link m-menu__toggle">
+										<i class="m-menu__link-icon flaticon-layers"></i>
+										<span class="m-menu__link-text">
+											Reservaciones
+										</span>
+									
+									</a>
+
+
+								<a  href="/vehiculos" class="m-menu__link m-menu__toggle">
+										<i class="m-menu__link-icon flaticon-layers"></i>
+										<span class="m-menu__link-text">
+											Vehiculos
+										</span>
+									
+								</a>
+
+									
+
+									<a  href="/clientes" class="m-menu__link m-menu__toggle">
+										<i class="m-menu__link-icon flaticon-layers"></i>
+										<span class="m-menu__link-text">
+											Clientes
+										</span>
+									
+									</a>
+
+								
+								
+								<a  href="/marcas" class="m-menu__link m-menu__toggle">
+											<i class="m-menu__link-icon flaticon-layers"></i>
+											<span class="m-menu__link-text">
+												Marcas
+											</span>
+										
+									</a>
+
+									<a  href="/modelos" class="m-menu__link m-menu__toggle">
+											<i class="m-menu__link-icon flaticon-layers"></i>
+											<span class="m-menu__link-text">
+												Modelos
+											</span>
+										
+									</a>
+
+									<a  href="/tiposcombustibles" class="m-menu__link m-menu__toggle">
+											<i class="m-menu__link-icon flaticon-layers"></i>
+											<span class="m-menu__link-text">
+												Tipos de Combustibles
+											</span>
+										
+										</a>
+
+										<a  href="/tiposvehiculos" class="m-menu__link m-menu__toggle">
+												<i class="m-menu__link-icon flaticon-layers"></i>
+												<span class="m-menu__link-text">
+													Tipos de Vehiculos
+												</span>
+											
+											</a>
+
+
+
+									
+
+							</li>	
+							
+							<li class="m-menu__section">
+									<h4 class="m-menu__section-text">
+										Configuracion
+									</h4>
+									<i class="m-menu__section-icon flaticon-more-v3"></i>
+							
+							</li>
+
+							<li class="m-menu__item  m-menu__item--submenu" aria-haspopup="true"  data-menu-submenu-toggle="hover">
+								
+									<a  href="/empleados" class="m-menu__link m-menu__toggle">
+										<i class="m-menu__link-icon flaticon-layers"></i>
+										<span class="m-menu__link-text">
+											Empleados
+										</span>
+									
+								</a>
+
+								<a  href="/admin/auth/user/add/" class="m-menu__link m-menu__toggle">
+									<i class="m-menu__link-icon flaticon-layers"></i>
+									<span class="m-menu__link-text">
+										Usuarios
+									</span>
+								
+							</a>
+
+							</li>
+
+						
+						</ul>
+					</div>
+					<!-- END: Aside Menu -->
+				</div>
+				<!-- END: Left Aside -->
+				<div class="m-grid__item m-grid__item--fluid m-wrapper">
+					<!-- BEGIN: Subheader -->
+					
+						{% comment %} Aqui va el cuerpo que deseariamos incluir {% endcomment %}
+						{% block body_context %}
+				
+						
+						{% endblock body_context %}
+					<!-- END: Subheader -->
+					<div class="m-content">
+					
+					</div>
+				</div>
+			</div>
+			<!-- end:: Body -->
+			<!-- begin::Footer -->
+			<footer class="m-grid__item		m-footer ">
+				<div class="m-container m-container--fluid m-container--full-height m-page__container">
+					<div class="m-stack m-stack--flex-tablet-and-mobile m-stack--ver m-stack--desktop">
+						<div class="m-stack__item m-stack__item--left m-stack__item--middle m-stack__item--last">
+							<span class="m-footer__copyright">
+								2017 &copy; RentCar Easy Por
+								<a href="#" class="m-link">
+									Jorge Miguel Hernandez Santos
+								</a>
+							</span>
+						</div>
+						{% comment %} <div class="m-stack__item m-stack__item--right m-stack__item--middle m-stack__item--first">
+							<ul class="m-footer__nav m-nav m-nav--inline m--pull-right">
+								<li class="m-nav__item">
+									<a href="#" class="m-nav__link">
+										<span class="m-nav__link-text">
+											Sobre
+										</span>
+									</a>
+								</li>
+								<li class="m-nav__item">
+									<a href="#"  class="m-nav__link">
+										<span class="m-nav__link-text">
+											Privacy
+										</span>
+									</a>
+								</li>
+								<li class="m-nav__item">
+									<a href="#" class="m-nav__link">
+										<span class="m-nav__link-text">
+											T&C
+										</span>
+									</a>
+								</li>
+								<li class="m-nav__item">
+									<a href="#" class="m-nav__link">
+										<span class="m-nav__link-text">
+											Purchase
+										</span>
+									</a>
+								</li>
+								<li class="m-nav__item m-nav__item">
+									<a href="#" class="m-nav__link" data-toggle="m-tooltip" title="Support Center" data-placement="left">
+										<i class="m-nav__link-icon flaticon-info m--icon-font-size-lg3"></i>
+									</a>
+								</li>
+							</ul>
+						</div> {% endcomment %}
+					</div>
+				</div>
+			</footer>
+			<!-- end::Footer -->
+		</div>
+		<!-- end:: Page -->\
+		<!-- begin::Quick Sidebar -->
+		<!-- end::Quick Sidebar -->
+
+		<!-- begin::Scroll Top -->
+		<div class="m-scroll-top m-scroll-top--skin-top" data-toggle="m-scroll-top" data-scroll-offset="500" data-scroll-speed="300">
+			<i class="la la-arrow-up"></i>
+		</div>
+		<!-- end::Scroll Top -->
+		<!--begin::Base Scripts -->
+		<script src=" {% static "assets/vendors/base/vendors.bundle.js" %}" type="text/javascript"></script>
+		<script src=" {% static "assets/demo/default/base/scripts.bundle.js" %}" type="text/javascript"></script>
+		<!--end::Base Scripts -->
+		<!--begin::Page Vendors -->
+		<script src="{% static "assets/vendors/custom/fullcalendar/fullcalendar.bundle.js" %}" type="text/javascript"></script>
+		<!--end::Page Vendors -->
+		<!--begin::Page Snippets -->
+		<script src="{% static "assets/app/js/dashboard.js" %}" type="text/javascript"></script>
+
+		{% comment %} <script src="{% static "assets/demo/default/custom/components/datatables/base/column-width.js" %}" type="text/javascript"></script> {% endcomment %}
+		<!--end::Page Snippets -->
+		 {% comment %} <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script> {% endcomment %}
+
+
+	</body>
+	<!-- end::Body -->
+</html>

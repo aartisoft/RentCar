@@ -1,0 +1,29 @@
+{% extends "base/frame.html" %}
+
+{% block head_title %}
+    Marcas | {{block.super}} 
+{% endblock head_title %}
+{% block body_context %}
+
+     
+
+<form action="" class="m-form m-form--fit m-form--label-align-right" method="post">
+    {% csrf_token %}
+        <div class="m-portlet__body">
+            <div class="form-group m-form__group m--margin-top-10">
+                 {{ form.as_p }}
+                 {% comment %} <input type="text" name="" value="hola" class="form-control m-input"> {% endcomment %}
+            </div>
+
+    <div class="m-portlet__foot m-portlet__foot--fit">
+        <div class="m-form__actions">
+             <input type="submit" value="Crear" class="btn btn-primary"/>
+
+        </div>
+   
+</div>
+</div>
+</form>
+
+{% endblock body_context %}
+

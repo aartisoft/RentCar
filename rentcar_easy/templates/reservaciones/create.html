@@ -1,0 +1,40 @@
+{% extends "base/frame.html" %}
+
+{% block head_title %}
+    Reservaciones | {{block.super}} 
+{% endblock head_title %}
+{% block body_context %}
+
+     
+
+<form action="" class="m-form m-form--fit m-form--label-align-right" method="post">
+    {% csrf_token %}
+        <div class="m-portlet__body">
+            <div class="form-group m-form__group m--margin-top-10">
+                    {% comment %} <label for="exampleInputEmail1"> Nombre: {{ form.nombre }}</label>
+                    
+                    <br>
+                <label for="exampleInputEmail1">Descripcion:</label>
+                    
+        
+                    <br>
+                    {{ form.descripcion }}
+                    <br>
+                 {% endcomment %}
+
+                    {{form.as_p}}
+    
+
+            </div>
+    <div class="m-portlet__foot m-portlet__foot--fit">
+        <div class="m-form__actions">
+             <input type="submit" value="Crear" class="btn btn-primary"/>
+
+        </div>
+   
+</div>
+</div>
+</form>
+
+{% endblock body_context %}
+

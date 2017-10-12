@@ -1,0 +1,21 @@
+{% extends "base/list_view.html" %}
+
+{% block head_title %}
+Tipos de Vehiculos | {{block.super}}
+{% endblock head_title %}
+
+{% block name_context %}
+Tipos de Vehiculos   
+{% endblock name_context %} 
+
+{% block link %}
+    "create/"
+{% endblock link %}
+
+
+{% block body_list_context %}
+
+    {% load render_table from django_tables2 %}
+    {% render_table table %}
+
+{% endblock body_list_context %}
