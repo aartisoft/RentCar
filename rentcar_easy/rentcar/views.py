@@ -1,10 +1,12 @@
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import CreateView
 from .models import Marcas,Modelos,TiposCombustibles,TiposVehiculos,Vehiculo,Clientes,Empleados,Rerservaciones
-from .forms import MarcasForm
+from .forms import MarcasForm, ModelosForm,TiposCombustiblesForm,TiposVehiculosForm,VehiculosForm,ReservacionesForm
 from django.db.models.signals import pre_save
 #from django.views.generic.edit import FormView
 from django.views.generic.edit import CreateView
@@ -37,6 +39,150 @@ class MarcasCreateView(LoginRequiredMixin,CreateView):
         instance.user=self.request.user
         
         return super(MarcasCreateView, self).form_valid(form) # Call the real save() method
+
+
+@login_required
+def form_marca_view(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = MarcasForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+            obj = Marcas.objects.create(nombre=form.cleaned_data.get('nombre'),
+                                        user=request.user)
+
+            return HttpResponseRedirect('/marcas/')
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = MarcasForm()
+
+    return render(request, 'marcas/create.html', {'form': form})
+
+@login_required
+def form_modelo_view(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = ModelosForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+            obj = Modelos.objects.create(nombre=form.cleaned_data.get('nombre'),
+                                        descripcion=form.cleaned_data.get('descripcion'),
+                                        marca=form.cleaned_data.get('marca'),
+                                        user=request.user)
+
+            return HttpResponseRedirect('/modelos/')
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = ModelosForm()
+
+    return render(request, 'modelos/create.html', {'form': form})
+
+
+@login_required
+def form_tiposcombustibles_view(request):
+
+    if request.method == 'POST':
+ 
+        form = TiposCombustiblesForm(request.POST)
+ 
+        if form.is_valid():
+    
+            obj = TiposCombustibles.objects.create( nombre=form.cleaned_data.get('nombre'),
+                                                    descripcion=form.cleaned_data.get('descripcion'),
+                                                    user=request.user)
+
+            return HttpResponseRedirect('/tiposcombustibles/')
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = TiposCombustiblesForm()
+
+    return render(request, 'tiposcombustibles/create.html', {'form': form})
+
+
+@login_required
+def form_tiposvehiculos_view(request):
+
+    if request.method == 'POST':
+    
+        form = TiposVehiculosForm(request.POST)
+
+        if form.is_valid():
+
+            obj = TiposVehiculos.objects.create( nombre=form.cleaned_data.get('nombre'),
+                                                    descripcion=form.cleaned_data.get('descripcion'),
+                                                    user=request.user)
+
+            return HttpResponseRedirect('/tiposvehiculos/')
+    else:
+        form = TiposVehiculosForm()
+
+    return render(request, 'tiposvehiculos/create.html', {'form': form})
+
+@login_required
+def form_vehiculos_view(request):
+
+    if request.method == 'POST':
+    
+        form = VehiculosForm(request.POST)
+
+        if form.is_valid():
+
+            obj = Vehiculo.objects.create(   descripcion = form.cleaned_data.get('descripcion'),
+                                             no_chasis = form.cleaned_data.get('no_chasis'),
+                                             no_motor = form.cleaned_data.get('no_chasis'),
+                                             no_placa = form.cleaned_data.get('no_chasis'),
+                                             modelo = form.cleaned_data.get('modelo'),
+                                             tipo = form.cleaned_data.get('tipo'),
+                                             combustible = form.cleaned_data.get('combustible'),
+                                             anio = form.cleaned_data.get('anio'),
+                                             color = form.cleaned_data.get('color'),
+                                             tarifa = form.cleaned_data.get('tarifa'),
+                                             user=request.user)
+
+            return HttpResponseRedirect('/vehiculos/')
+    else:
+        form = VehiculosForm()
+
+    return render(request, 'vehiculos/create.html', {'form': form})
+
+
+@login_required
+def form_reservaciones_view(request):
+
+    if request.method == 'POST':
+    
+        form = ReservacionesForm(request.POST)
+
+        if form.is_valid():
+
+            obj = Rerservaciones.objects.create(  empleado = form.cleaned_data.get('empleado'),
+                                             vehiculo = form.cleaned_data.get('vehiculo'),
+                                             cliente = form.cleaned_data.get('cliente'),
+                                             fecha_renta = form.cleaned_data.get('fecha_renta'),
+                                             fecha_devolucion = form.cleaned_data.get('fecha_devolucion'),
+                                             monto_dia = form.cleaned_data.get('monto_dia'),
+                                             cantidad_dia = form.cleaned_data.get('cantidad_dia'),
+                                             comentario = form.cleaned_data.get('comentario'),
+                                             user=request.user)
+
+            return HttpResponseRedirect('/reservaciones/')
+    else:
+        form = ReservacionesForm()
+
+    return render(request, 'reservaciones/create.html', {'form': form})
+
+
 
 
 
