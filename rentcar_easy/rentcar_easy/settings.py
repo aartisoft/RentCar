@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rentcar',
     'django_tables2',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

@@ -5,25 +5,58 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import CreateView
+from django.views.generic.edit import FormMixin
 from .models import Marcas,Modelos,TiposCombustibles,TiposVehiculos,Vehiculo,Clientes,Empleados,Rerservaciones
 from .forms import MarcasForm, ModelosForm,TiposCombustiblesForm,TiposVehiculosForm,VehiculosForm,ReservacionesForm
+from .forms import ClientesForm,EmpleadosForm
 from django.db.models.signals import pre_save
-#from django.views.generic.edit import FormView
-from django.views.generic.edit import CreateView
+from reportlab.pdfgen import canvas
+from django.http import HttpResponse
+from io import BytesIO
+from django.template.loader import get_template
+from django.views.generic.edit import CreateView,UpdateView,DeleteView
+from django_tables2.utils import A
+from django.urls import reverse_lazy
+# from django_filters import FilterView
+import django_filters
+from django_tables2.views import SingleTableMixin
 import django_tables2 as tables
+import json
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle,Paragraph
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from django.conf import settings
+from reportlab.lib.enums import TA_RIGHT
+from reportlab.pdfgen.canvas import Canvas
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch
+from reportlab.lib.styles import ParagraphStyle
+
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+
+
+
 
 # Create your views here.
 
 class MarcarTable(tables.Table):
-    id = tables.Column()
+    #id = tables.Column()
     nombre = tables.Column()
+    pk = tables.LinkColumn('marca-update',verbose_name='Editar',args=[A('pk')], text='',attrs={'a':{'class': 'm-portlet__nav-link btn m-btn m-btn--hover-accent  m-btn--icon-only m-btn--pill flaticon-interface-3','title': 'Editar'}})
+    id = tables.LinkColumn('marca-delete',verbose_name='Eliminar',args=[A('id')], text='',attrs={'td':{'class': 'm-portlet__nav-link btn m-btn m-btn--hover-danger  m-btn--icon-only m-btn--pill flaticon-circle','title': 'Eliminar' }})
     
 
     class Meta:
         attrs = {'class': 'table table-striped table-bordered'}
  
 def MarcasViewTable(request):
-    table =MarcarTable(Marcas.objects.all())
+    table = MarcarTable(Marcas.objects.all())
+
+    table.order_by = 'create_at'
+
     table.paginate(page=request.GET.get('page', 1), per_page=10)
     return render(request, 'marcas/list.html', {'marcas': table})
 
@@ -87,7 +120,6 @@ def form_modelo_view(request):
 
     return render(request, 'modelos/create.html', {'form': form})
 
-
 @login_required
 def form_tiposcombustibles_view(request):
 
@@ -108,7 +140,6 @@ def form_tiposcombustibles_view(request):
         form = TiposCombustiblesForm()
 
     return render(request, 'tiposcombustibles/create.html', {'form': form})
-
 
 @login_required
 def form_tiposvehiculos_view(request):
@@ -182,16 +213,67 @@ def form_reservaciones_view(request):
 
     return render(request, 'reservaciones/create.html', {'form': form})
 
+@login_required
+def form_clientes_view(request):
 
+    if request.method == 'POST':
+    
+        form = ClientesForm(request.POST)
 
+        if form.is_valid():
+
+            obj = Clientes.objects.create(   nombre = form.cleaned_data.get('nombre'),
+                                             cedula = form.cleaned_data.get('cedula'),
+                                             no_tjcredito = form.cleaned_data.get('no_tjcredito'),
+                                             limite_credito = form.cleaned_data.get('limite_credito'),
+                                             tipo_persona = form.cleaned_data.get('tipo_persona'),
+                                             sexo = form.cleaned_data.get('sexo'),
+                                             fecha_nacimiento = form.cleaned_data.get('fecha_nacimiento'),
+                                             licencia = form.cleaned_data.get('licencia'),
+                                             direccion = form.cleaned_data.get('direccion'),
+                                             user=request.user)
+
+            return HttpResponseRedirect('/clientes/')
+    else:
+
+        form = ClientesForm()
+
+    return render(request, 'clientes/create.html', {'form': form})
+
+@login_required
+def form_empleados_view(request):
+
+    if request.method == 'POST':
+    
+        form = EmpleadosForm(request.POST)
+
+        if form.is_valid():
+
+            obj = Empleados.objects.create(  nombre = form.cleaned_data.get('nombre'),
+                                             cedula = form.cleaned_data.get('cedula'),
+                                             telefono = form.cleaned_data.get('telefono'),
+                                             comision = form.cleaned_data.get('comision'),
+                                             fecha_nacimiento = form.cleaned_data.get('fecha_nacimiento'),
+                                             fecha_ingreso = form.cleaned_data.get('fecha_ingreso'),
+                                             user=request.user)
+
+            return HttpResponseRedirect('/empleados/')
+    else:
+
+        form = EmpleadosForm()
+
+    return render(request, 'empleados/create.html', {'form': form})
 
 
 
 class  ModeloTable(tables.Table):
-    id = tables.Column()
+    # id = tables.Column()
     nombre = tables.Column()
-    descripcion = tables.Column()
+    descripcion = tables.Column(empty_values=())
     marca = tables.Column()
+    pk = tables.LinkColumn('modelo-update',verbose_name='Editar',args=[A('pk')], text='',attrs={'a':{'class': 'm-portlet__nav-link btn m-btn m-btn--hover-accent  m-btn--icon-only m-btn--pill flaticon-interface-3','title': 'Editar'}})
+    id = tables.LinkColumn('modelo-delete',verbose_name='Eliminar',args=[A('id')], text='',attrs={'td':{'class': 'm-portlet__nav-link btn m-btn m-btn--hover-danger  m-btn--icon-only m-btn--pill flaticon-circle','title': 'Eliminar' }})
+    
     
 
     class Meta:
@@ -218,9 +300,13 @@ class ModelosCreateView(LoginRequiredMixin,CreateView):
 
 
 class  TipoCombustibleTable(tables.Table):
-    id = tables.Column()
+    # id = tables.Column()
     nombre = tables.Column()
-    descripcion = tables.Column()
+    descripcion = tables.Column(empty_values=())
+    pk = tables.LinkColumn('tipocombustible-update',verbose_name='Editar',args=[A('pk')], text='',attrs={'a':{'class': 'm-portlet__nav-link btn m-btn m-btn--hover-accent  m-btn--icon-only m-btn--pill flaticon-interface-3','title': 'Editar'}})
+    id = tables.LinkColumn('tipocombustible-delete',verbose_name='Eliminar',args=[A('id')], text='',attrs={'td':{'class': 'm-portlet__nav-link btn m-btn m-btn--hover-danger  m-btn--icon-only m-btn--pill flaticon-circle','title': 'Eliminar' }})
+    
+    
 
 
     class Meta:
@@ -249,9 +335,13 @@ class  TiposCombustiblesCreateView(LoginRequiredMixin,CreateView):
 
 
 class  TipoVehiculosTable(tables.Table):
-    id = tables.Column()
+    # id = tables.Column()
     nombre = tables.Column()
-    descripcion = tables.Column()
+    descripcion = tables.Column(empty_values=())
+    pk = tables.LinkColumn('tipovehiculo-update',verbose_name='Editar',args=[A('pk')], text='',attrs={'a':{'class': 'm-portlet__nav-link btn m-btn m-btn--hover-accent  m-btn--icon-only m-btn--pill flaticon-interface-3','title': 'Editar'}})
+    id = tables.LinkColumn('tipovehiculo-delete',verbose_name='Eliminar',args=[A('id')], text='',attrs={'td':{'class': 'm-portlet__nav-link btn m-btn m-btn--hover-danger  m-btn--icon-only m-btn--pill flaticon-circle','title': 'Eliminar' }})
+    
+    
 
 
     class Meta:
@@ -279,17 +369,22 @@ class  TiposVehiculosCreateView(LoginRequiredMixin,CreateView):
 
 
 class  VehiculosTable(tables.Table):
-    id = tables.Column()
+    # id = tables.Column()
     descripcion = tables.Column()
-    no_chasis   = tables.Column()
-    no_motor    = tables.Column()
-    no_placa    = tables.Column()
+    no_chasis   = tables.Column(verbose_name='No. Chasis')
+    no_motor    = tables.Column(verbose_name='No. Motor')
+    no_placa    = tables.Column(verbose_name='No. Plca')
     modelo      = tables.Column()
     tipo        = tables.Column()
     combustible = tables.Column()
     anio        = tables.Column()
     color       = tables.Column()
     tarifa      = tables.Column()
+    pk = tables.LinkColumn('vehiculo-update',verbose_name='Editar',args=[A('pk')], text='',attrs={'a':{'class': 'm-portlet__nav-link btn m-btn m-btn--hover-accent  m-btn--icon-only m-btn--pill flaticon-interface-3','title': 'Editar'}})
+    id = tables.LinkColumn('vehiculo-delete',verbose_name='Eliminar',args=[A('id')], text='',attrs={'td':{'class': 'm-portlet__nav-link btn m-btn m-btn--hover-danger  m-btn--icon-only m-btn--pill flaticon-circle','title': 'Eliminar' }})
+    
+    
+
  
 
 
@@ -320,12 +415,17 @@ class  ClientesTable(tables.Table):
     id                      = tables.Column()
     nombre                  = tables.Column()
     cedula                  = tables.Column()
-    no_tjcredito            = tables.Column(accessor='No_Tarjecta_Credito')
-    limite_credito          = tables.Column()
+    no_tjcredito            = tables.Column(verbose_name='No. Tarjeta  de Credito')
+    limite_credito          = tables.Column(verbose_name='Limite de Credito')
     tipo_persona            = tables.Column()
     sexo                    = tables.Column()
     fecha_nacimiento        = tables.Column()
-    licencia = tables.Column()
+    licencia                = tables.Column(verbose_name='No. de Licencia')
+    pk = tables.LinkColumn('cliente-update',verbose_name='Editar',args=[A('pk')], text='',attrs={'a':{'class': 'm-portlet__nav-link btn m-btn m-btn--hover-accent  m-btn--icon-only m-btn--pill flaticon-interface-3','title': 'Editar'}})
+    id = tables.LinkColumn('cliente-delete',verbose_name='Eliminar',args=[A('id')], text='',attrs={'td':{'class': 'm-portlet__nav-link btn m-btn m-btn--hover-danger  m-btn--icon-only m-btn--pill flaticon-circle','title': 'Eliminar' }})
+    
+    
+
   
     class Meta:
         attrs = {'class': 'table table-striped table-bordered'}
@@ -357,7 +457,10 @@ class  EmpleadosTable(tables.Table):
     comision    = tables.Column()
     fecha_nacimiento       = tables.Column()
     fecha_ingreso                = tables.Column()
-
+    pk = tables.LinkColumn('empleado-update',verbose_name='Editar',args=[A('pk')], text='',attrs={'a':{'class': 'm-portlet__nav-link btn m-btn m-btn--hover-accent  m-btn--icon-only m-btn--pill flaticon-interface-3','title': 'Editar'}})
+    id = tables.LinkColumn('empleado-delete',verbose_name='Eliminar',args=[A('id')], text='',attrs={'td':{'class': 'm-portlet__nav-link btn m-btn m-btn--hover-danger  m-btn--icon-only m-btn--pill flaticon-circle','title': 'Eliminar' }})
+    
+    
   
     class Meta:
         attrs = {'class': 'table table-striped table-bordered'}
@@ -383,7 +486,7 @@ class EmpleadosCreateView(LoginRequiredMixin,CreateView):
 
 
 class  ReservacionesTable(tables.Table):
-    id = tables.Column()
+    # id = tables.Column()
     empleado = tables.Column()
     vehiculo   = tables.Column()
     cliente    = tables.Column()
@@ -392,6 +495,10 @@ class  ReservacionesTable(tables.Table):
     monto_dia                = tables.Column()
     cantidad_dia       = tables.Column()
     comentario                = tables.Column()
+    pk = tables.LinkColumn('reservacion-update',verbose_name='Editar',args=[A('pk')], text='',attrs={'a':{'class': 'm-portlet__nav-link btn m-btn m-btn--hover-accent  m-btn--icon-only m-btn--pill flaticon-interface-3','title': 'Editar'}})
+    id = tables.LinkColumn('reservacion-delete',verbose_name='Eliminar',args=[A('id')], text='',attrs={'td':{'class': 'm-portlet__nav-link btn m-btn m-btn--hover-danger  m-btn--icon-only m-btn--pill flaticon-circle','title': 'Eliminar' }})
+    
+    
 
     class Meta:
         attrs = {'class': 'table table-striped table-bordered'}
@@ -402,7 +509,7 @@ def ReservacionesViewTable(request):
     return render(request, 'reservaciones/list.html', {'table': table})
 
     
-class ReservacionesCreateView(LoginRequiredMixin,CreateView):
+class ReservacionesCreateView(LoginRequiredMixin, CreateView):
     model= Rerservaciones
     fields = ['empleado','vehiculo','cliente','fecha_renta','fecha_devolucion','monto_dia','cantidad_dia','comentario']
     template_name = 'reservaciones/create.html'
@@ -419,4 +526,335 @@ class ReservacionesCreateView(LoginRequiredMixin,CreateView):
 # @receiver(pre_save, sender=Marcas)
 #     def my_handler(sender, **kwargs):
 
+class MarcasUpdateView(UpdateView,FormMixin):
+    model = Marcas
+    # fields = ['nombre']
+    #template_name_suffix = '_update_form'
+    form_class = MarcasForm
+    template_name= 'marcas/create.html'
+    success_url = '/marcas/'
+    
+class MarcasDeleteView(DeleteView):
+    model = Marcas
+    success_url = '/marcas/'
+    template_name= 'marcas/delete.html'
 
+
+
+class ModelosUpdateView(UpdateView,FormMixin):
+    model = Modelos
+    # fields = ['nombre']
+    #template_name_suffix = '_update_form'
+    form_class = ModelosForm
+    template_name= 'modelos/create.html'
+    success_url = '/modelos/'
+    
+class ModelosDeleteView(DeleteView):
+    model = Modelos
+    success_url = '/modelos/'
+    template_name= 'modelos/delete.html'
+
+class TiposCombustiblesUpdateView(UpdateView,FormMixin):
+    model = TiposCombustibles
+    # fields = ['nombre']
+    #template_name_suffix = '_update_form'
+    form_class = TiposCombustiblesForm
+    template_name= 'tiposcombustibles/create.html'
+    success_url = '/tiposcombustibles/'
+    
+class TiposCombustiblesDeleteView(DeleteView):
+    model = TiposCombustibles
+    success_url = '/tiposcombustibles/'
+    template_name= 'tiposcombustibles/delete.html'
+
+
+class TiposVehiculosUpdateView(UpdateView,FormMixin):
+    model = TiposVehiculos
+    form_class = TiposVehiculosForm
+    template_name= 'tiposvehiculos/create.html'
+    success_url = '/tiposvehiculos/'
+    
+class TiposVehiculosDeleteView(DeleteView):
+    model = TiposVehiculos
+    success_url = '/tiposvehiculos/'
+    template_name= 'tiposvehiculos/delete.html'
+
+class VehiculosUpdateView(UpdateView,FormMixin):
+    model = Vehiculo
+    form_class = VehiculosForm
+    template_name= 'vehiculos/create.html'
+    success_url = '/vehiculos/'
+    
+class VehiculosDeleteView(DeleteView):
+    model = TiposVehiculos
+    success_url = '/vehiculos/'
+    template_name= 'vehiculos/delete.html'
+
+class RerservacionesUpdateView(UpdateView,FormMixin):
+    model = Rerservaciones
+    form_class = ReservacionesForm
+    template_name= 'reservaciones/create.html'
+    success_url = '/reservaciones/'
+    
+class RerservacionesDeleteView(DeleteView):
+    model = Rerservaciones
+    success_url = '/reservaciones/'
+    template_name= 'reservaciones/delete.html'
+    
+
+class ClientesUpdateView(UpdateView,FormMixin):
+    model = Clientes
+    form_class = ClientesForm
+    template_name= 'clientes/create.html'
+    success_url = '/clientes/'
+    
+class ClientesDeleteView(DeleteView):
+    model = Clientes
+    success_url = '/clientes/'
+    template_name= 'clientes/delete.html'
+    
+
+class EmpleadosUpdateView(UpdateView,FormMixin):
+    model = Empleados
+    form_class = EmpleadosForm
+    template_name= 'empleados/create.html'
+    success_url = '/empleados/'
+    
+class EmpleadosDeleteView(DeleteView):
+    model = Empleados
+    success_url = '/empleados/'
+    template_name= 'empleados/delete.html'
+    
+
+
+def testViewTableJson(request):
+
+    data =  json.loads({"nombre":"Lucia"})
+
+    print(json.dumps(data))
+    return JsonResponse(json.dumps(data))
+
+
+
+class VehiculoFilter(django_filters.FilterSet):
+    class Meta:
+        model = Vehiculo
+        fields = ['modelo']
+
+class FilteredVehiculoListView(SingleTableMixin):
+    table_class = VehiculosTable
+    model = Vehiculo
+    template_name = 'vehiculos/test_list.html'
+    filterset_class = VehiculoFilter
+
+
+
+def print_marcas(request):
+    buffer = BytesIO()
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="marcas.pdf"'
+
+    doc = SimpleDocTemplate(buffer,
+                            rightMargin=72,
+                            leftMargin=72,
+                            topMargin=72,
+                            bottomMargin=72)
+
+    # Our container for 'Flowable' objects
+    elements = []
+
+    # A large collection of style sheets pre-made for us
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name='LeftAlign', alignment=TA_RIGHT))
+
+    # Draw things on the PDF. Here's where the PDF generation happens.
+    # See the ReportLab documentation for the full list of functionality.
+    marcas = Marcas.objects.all()
+    elements.append(Paragraph('Marcas', styles['LeftAlign']))
+
+    # Need a place to store our table rows
+    table_data = []
+    for i, marca in enumerate(marcas):
+        # Add a row to the table
+        table_data.append([marca.nombre])
+    # Create the table
+    user_table = Table(table_data, colWidths=[doc.width/3.0]*3)
+    user_table.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
+                                    ('BOX', (0, 0), (-1, -1), 0.25, colors.black)]))
+    elements.append(user_table)
+    doc.build(elements)
+
+    # Get the value of the BytesIO buffer and write it to the response.
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+    return response
+
+
+def print_clientes(request):
+    buffer = BytesIO()
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="clientes.pdf"'
+
+    doc = SimpleDocTemplate(buffer,
+                            rightMargin=72,
+                            leftMargin=72,
+                            topMargin=72,
+                            bottomMargin=72)
+
+    # Our container for 'Flowable' objects
+    elements = []
+
+    # A large collection of style sheets pre-made for us
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name='LeftAlign', alignment=TA_RIGHT))
+
+    # Draw things on the PDF. Here's where the PDF generation happens.
+    # See the ReportLab documentation for the full list of functionality.
+    list_objects = Clientes.objects.all()
+    elements.append(Paragraph('Clientes', styles['LeftAlign']))
+
+    # Need a place to store our table rows
+    table_data = []
+    for i, item in enumerate(list_objects):
+        # Add a row to the table
+        table_data.append([item.nombre,item.cedula,item.no_tjcredito,item.tipo_persona])
+    # Create the table
+    user_table = Table(table_data, colWidths=[doc.width/3.0])
+    user_table.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
+                                    ('BOX', (0, 0), (-1, -1), 0.25, colors.black)]))
+    elements.append(user_table)
+    doc.build(elements)
+
+    # Get the value of the BytesIO buffer and write it to the response.
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+    return response
+
+
+def generar_pdf_clientes(request):
+    print ("Genero el PDF")
+    response = HttpResponse(content_type='application/pdf')
+    pdf_name = "clientes.pdf"  # llamado clientes
+    # la linea 26 es por si deseas descargar el pdf a tu computadora
+    # response['Content-Disposition'] = 'attachment; filename=%s' % pdf_name
+    buff = BytesIO()
+    doc = SimpleDocTemplate(buff,
+                            pagesize=letter,
+                            rightMargin=40,
+                            leftMargin=40,
+                            topMargin=60,
+                            bottomMargin=18,
+                            )
+    clientes = []
+    styles = getSampleStyleSheet()
+    header = Paragraph("Listado de Clientes", styles['Heading2'])
+    clientes.append(header)
+    linea = Paragraph("_________________________________________________________________", styles['Heading2'])
+    clientes.append(linea)
+    headings = ('Nombre', 'Cedula', 'No. Credito', 'Tipo Persona','Sexo','Fecha Nacimiento')
+    allclientes = [(p.nombre, p.cedula, p.no_tjcredito, p.tipo_persona, p.sexo, p.fecha_nacimiento) for p in Clientes.objects.all()]
+    print (allclientes)
+
+    t = Table([headings] + allclientes)
+    t.setStyle(TableStyle(
+        [
+            ('GRID', (0, 0), (5, -1), 1, colors.black),
+            ('LINEBELOW', (0, 0), (-1, 0), 2, colors.black),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+            ('LINEABOVE', (0,1), (-1,-1), 0.25, colors.gray)
+        ]
+    ))
+    clientes.append(t)
+    doc.build(clientes)
+    response.write(buff.getvalue())
+    buff.close()
+    return response
+
+
+def generar_pdf_modelos(request):
+    print ("Genero el PDF")
+    response = HttpResponse(content_type='application/pdf')
+    pdf_name = "modelos.pdf"  # llamado clientes
+    # la linea 26 es por si deseas descargar el pdf a tu computadora
+    # response['Content-Disposition'] = 'attachment; filename=%s' % pdf_name
+    buff = BytesIO()
+    doc = SimpleDocTemplate(buff,
+                            pagesize=letter,
+                            rightMargin=40,
+                            leftMargin=40,
+                            topMargin=60,
+                            bottomMargin=18,
+                            )
+    clientes = []
+    styles = getSampleStyleSheet()
+    header = Paragraph("Listado de Modelos de Vehiculos", styles['Heading2'])
+    clientes.append(header)
+    linea = Paragraph("_________________________________________________________________", styles['Heading2'])
+    clientes.append(linea)
+    headings = ('Nombre                                    ', 'Descripcion                                    ', 'Marca                                    ')
+    allclientes = [(p.nombre, p.descripcion, p.marca.nombre) for p in Modelos.objects.all()]
+    print (allclientes)
+
+    t = Table([headings] + allclientes)
+    t.setStyle(TableStyle(
+        [
+            ('GRID', (0, 0), (3, -1), 1, colors.black),
+            ('LINEBELOW', (0, 0), (-1, 0), 2, colors.black),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+            ('LINEABOVE', (0,1), (-1,-1), 0.25, colors.gray),
+            
+        
+        ]
+    ))
+    clientes.append(t)
+    doc.build(clientes)
+    response.write(buff.getvalue())
+    buff.close()
+    return response
+
+
+
+
+def generar_pdf_marcas(request):
+    print ("Genero el PDF")
+    response = HttpResponse(content_type='application/pdf')
+    pdf_name = "marcas.pdf"  # llamado clientes
+    # la linea 26 es por si deseas descargar el pdf a tu computadora
+    # response['Content-Disposition'] = 'attachment; filename=%s' % pdf_name
+    buff = BytesIO()
+    doc = SimpleDocTemplate(buff,
+                            pagesize=letter,
+                            rightMargin=40,
+                            leftMargin=40,
+                            topMargin=60,
+                            bottomMargin=18,
+                            )
+    clientes = []
+    styles = getSampleStyleSheet()
+    header = Paragraph("Listado de Marcas de Vehiculos", styles['Heading2'])
+    clientes.append(header)
+    linea = Paragraph("_________________________________________________________________", styles['Heading2'])
+    clientes.append(linea)
+    headings = ('Nombre ')
+    allmarcas = [(p.nombre) for p in Marcas.objects.all()]
+    print (allmarcas)
+
+    t = Table([headings] + allmarcas)
+    t.setStyle(TableStyle(
+        [
+            ('GRID', (0, 0), (2, -1), 1, colors.black),
+            ('LINEBELOW', (0, 0), (-1, 0), 2, colors.black),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+            ('LINEABOVE', (0,1), (-1,-1), 0.25, colors.gray)
+            
+        ]
+    ))
+    clientes.append(t)
+    doc.build(clientes)
+    response.write(buff.getvalue())
+    buff.close()
+    return response

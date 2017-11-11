@@ -1,7 +1,7 @@
 {% extends "base/list_view.html" %}
 
 {% block head_title %}
-    Vehiculos | {{block.super}}
+    Clientes | {{block.super}}
 {% endblock head_title %}
 
 {% block name_context %}
@@ -11,6 +11,12 @@ Clientes
 {% block link %}
     "create/"
 {% endblock link %}
+
+
+
+{% block link_report %}
+"report/"
+{% endblock link_report %}
 
 
 {% block body_list_context %}

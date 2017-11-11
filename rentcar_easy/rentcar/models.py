@@ -73,7 +73,7 @@ class Vehiculo(models.Model):
 
     descripcion = models.CharField(max_length=50)
     no_chasis   = models.CharField(max_length=25, blank=True, null=True)
-    no_motor    = models.CharField(max_length=15, blank=True, null=True)
+    no_motor    = models.CharField(max_length=16, blank=True, null=True)
     no_placa    = models.CharField(max_length=7, blank=True, null=True)
     modelo      = models.ForeignKey('Modelos', on_delete=models.CASCADE)
     tipo        = models.ForeignKey('TiposVehiculos', on_delete=models.CASCADE)
@@ -94,8 +94,6 @@ class Vehiculo(models.Model):
 class Clientes(models.Model):
 
 
-
-
     TYPE_PERSON_CHOISES = ( ('Fisica', 'Fisica'), ('Juridica', 'Juridica'),
     )
 
@@ -106,13 +104,13 @@ class Clientes(models.Model):
 
 
     nombre          = models.CharField(max_length=30)
-    cedula          = models.CharField(max_length=11)
-    no_tjcredito    = models.CharField(max_length=15, blank=True, null=True)
-    limite_credito  = models.IntegerField( blank=True, null=True)
+    cedula          = models.CharField(max_length=12)
+    no_tjcredito    = models.CharField(max_length=26, blank=True, null=True)
+    limite_credito  = models.PositiveIntegerField( default=0)
     tipo_persona    = models.CharField(max_length=10,choices=TYPE_PERSON_CHOISES, blank=True, null=True)
     sexo            = models.CharField(max_length=10,choices=SEX_CHOISES, blank=True, null=True)
     fecha_nacimiento= models.DateField(auto_now=False,auto_now_add=False)
-    licencia        = models.CharField(max_length=15)
+    licencia        = models.CharField(max_length=16)
     direccion       = models.CharField(max_length=100, blank=True, null=True)
     create_at       = models.DateTimeField(auto_now_add=True)
     update_at       = models.DateTimeField(auto_now=True)
@@ -125,9 +123,9 @@ class Clientes(models.Model):
 class Empleados(models.Model):
 
     nombre           = models.CharField(max_length=30)
-    cedula           = models.CharField(max_length=11)
-    telefono         = models.CharField(max_length=11)
-    comision         = models.IntegerField(blank=True, null=True)
+    cedula           = models.CharField(max_length=12)
+    telefono         = models.CharField(max_length=12)
+    comision         = models.PositiveIntegerField(blank=True, null=True)
     fecha_nacimiento = models.DateField(auto_now=False,auto_now_add=False)
     fecha_ingreso    = models.DateField(auto_now=False,auto_now_add=False)
     create_at        = models.DateTimeField(auto_now_add=True)

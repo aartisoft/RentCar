@@ -1,0 +1,33 @@
+{% extends "base/frame.html" %}
+
+{% block head_title %}
+Tipos Combustibles | {{block.super}} 
+{% endblock head_title %}
+{% block body_context %}
+
+
+     
+<form action="" class="m-form m-form--fit m-form--label-align-right" method="post">
+
+
+        <h1 class="form-group m-form__group m--margin-top-10">Eliminar Tipos Combustibles</h1>
+    {% csrf_token %}
+        <div class="m-portlet__body">
+            <div class="form-group m-form__group m--margin-top-10">
+                    <form action="" method="post">{% csrf_token %}
+                            <p>Esta seguro que quiere eliminar el Tipos Combustibles "{{ object }}"?</p>
+                        
+            </div>
+
+    <div class="m-portlet__foot m-portlet__foot--fit">
+        <div class="m-form__actions">
+             <input type="submit" value="Eliminar" class="btn btn-danger"/>
+             <a href="/tiposcombustibles/"> <input type="button" value="Cancelar" class="btn btn-basic"/></a>
+        </div>
+    </form>
+</div>
+</div>
+</form>
+
+{% endblock body_context %}
+

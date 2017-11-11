@@ -1,5 +1,8 @@
 from .models import  Marcas, Modelos,TiposCombustibles,TiposVehiculos,Empleados,Clientes,Vehiculo,Rerservaciones
+from bootstrap_datepicker.widgets import DatePicker
+from .utils import validar_cedula,validar_tarjeta
 from django import forms
+#from django.core.exceptions import 
 from django.forms import ModelForm
 
 # class MarcasForm(forms.Form):
@@ -16,6 +19,12 @@ class MarcasForm(ModelForm):
         self.fields['nombre'].widget = forms.TextInput(attrs={
    
             'class':'form-control m-input'})
+    def clean_nombre(self):
+        nombre = self.cleaned_data['nombre']
+        print(nombre)
+        if nombre=="jorge":
+            raise forms.ValidationError("El nombre de la marca no puede ser jorge")
+        return nombre
 
 class ModelosForm(ModelForm):
 
@@ -129,11 +138,6 @@ class VehiculosForm(ModelForm):
         self.fields['tarifa'].widget = forms.NumberInput(attrs={
             'class':'form-control m-input'})
 
-
-
-
-
-
 class ReservacionesForm(ModelForm):
     class Meta:
         model = Rerservaciones
@@ -153,11 +157,21 @@ class ReservacionesForm(ModelForm):
         self.fields['cliente'] = forms.ModelChoiceField(queryset=Clientes.objects.all(),empty_label=None,widget=forms.Select(attrs={'class':'form-control m-input'}))
 
 
-        self.fields['fecha_renta'].widget = forms.TextInput(attrs={
-            'class':'form-control m-input'})
+        self.fields['fecha_renta'] = forms.DateField(widget=DatePicker(
+            attrs={
+            'class':'form-control m-input'},
+            options={  "format": "mm/dd/yyyy",
+                        "autoclose": True
+                        }))
 
-        self.fields['fecha_devolucion'] = forms.CharField(max_length=15, widget=forms.TextInput(attrs=
-            {'class':'form-control m-input'}))
+        
+
+        self.fields['fecha_devolucion'] = forms.DateField(widget=DatePicker(
+            attrs={
+            'class':'form-control m-input'},
+            options={  "format": "mm/dd/yyyy",
+                        "autoclose": True
+                        }))
 
         self.fields['monto_dia'].widget = forms.NumberInput(attrs={
             'class':'form-control m-input'})
@@ -171,11 +185,151 @@ class ReservacionesForm(ModelForm):
 
 
 
+class ClientesForm(ModelForm):
+    class Meta:
+        model = Clientes
+        exclude = ('updated', 'created','user')
+
+
+    def __init__(self, *args, **kwargs):
+        
+        super(ClientesForm, self).__init__(*args, **kwargs)
+
+        TYPE_PERSON_CHOISES = ( 
+            ('Fisica', 'Fisica'), 
+            ('Juridica', 'Juridica'),)
+
+        SEX_CHOISES = (
+            ('M', 'Masculino'),
+            ('F', 'Femenino'),)
+
+        self.fields['nombre'].widget = forms.TextInput(attrs={
+            'class':'form-control m-input'})
+        
+        self.fields['cedula'].widget = forms.TextInput(attrs={
+            'class':'form-control m-input'})
+
+        self.fields['no_tjcredito'] = forms.CharField(label="No. de Tarjeta de Credito")
+        
+        self.fields['no_tjcredito'].widget = forms.TextInput(attrs={
+            'class':'form-control m-input'})
+
+        self.fields['limite_credito'].widget = forms.NumberInput(attrs={
+            'class':'form-control m-input'})
+        
+        self.fields['tipo_persona'].widget = forms.Select(choices=TYPE_PERSON_CHOISES,attrs={
+            'class':'form-control m-input'})
+
+        self.fields['sexo'].widget = forms.Select(choices=SEX_CHOISES,attrs={
+            'class':'form-control m-input'})
+    
+        self.fields['fecha_nacimiento'] = forms.DateField(widget=DatePicker(
+            attrs={
+            'class':'form-control m-input'},
+            options={  "format": "mm/dd/yyyy",
+                        "autoclose": True
+                        }))
+
+        self.fields['licencia'] = forms.CharField(label="No. de Licencia")
+        
+        self.fields['licencia'].widget = forms.TextInput(attrs={
+            'class':'form-control m-input'})
+        
+        self.fields['direccion'].widget = forms.TextInput(attrs={
+            'class':'form-control m-input'})
+
+    def clean_cedula(self):
+        cedula = self.cleaned_data['cedula']
+
+        if "-" in cedula:
+            raise forms.ValidationError("No se permiten:-")
+            
+        if " " in cedula:
+            raise forms.ValidationError("No se permiten:-")  
+
+        if cedula:
+            if len(cedula) !=11:
+                raise forms.ValidationError("El numero de cedula debe de tener 11 digitos")  
+     
+        if validar_cedula(cedula)==False:
+            raise forms.ValidationError("Este numero de cedula no es valido")
+
+        qs = Clientes.objects.filter(cedula__contains=cedula)
+        if qs.exists():
+            raise forms.ValidationError("Ya existe un cliente con esta cedula")
+
+
+        return cedula.replace('-','')
+
+    
+    def clean_no_tjcredito(self):
+        no_tjcredito = self.cleaned_data['no_tjcredito']
+     
+        if validar_tarjeta(no_tjcredito)==False:
+            raise forms.ValidationError("La tarjeta no esta correcta")
+
+        return no_tjcredito
+                  
+                  
+      
 
 
 
 
 
+class EmpleadosForm(ModelForm):
+    class Meta:
+        model = Empleados
+        exclude = ('updated', 'created','user')
+
+
+    def __init__(self, *args, **kwargs):
+        
+        super(EmpleadosForm, self).__init__(*args, **kwargs)
+
+
+        self.fields['nombre'].widget = forms.TextInput(attrs={
+            'class':'form-control m-input'})
+        
+        self.fields['cedula'].widget = forms.TextInput(attrs={
+            'class':'form-control m-input'})
+                
+        self.fields['telefono'].widget = forms.TextInput(attrs={
+            'class':'form-control m-input'})
+
+        self.fields['comision'].widget = forms.NumberInput(attrs={
+            'class':'form-control m-input'})
+        
+        self.fields['fecha_nacimiento'] = forms.DateField(widget=DatePicker(
+            attrs={
+            'class':'form-control m-input'},
+            options={  "format": "mm/dd/yyyy",
+                        "autoclose": True
+                        }))
+
+        self.fields['fecha_ingreso'] = forms.DateField(widget=DatePicker(
+            attrs={
+            'class':'form-control m-input'},
+            options={  "format": "mm/dd/yyyy",
+                        "autoclose": True
+                        }))
+
+
+    def clean_cedula(self):
+        cedula = self.cleaned_data['cedula']
+        print(cedula)
+     
+        if validar_cedula(cedula)==False:
+            raise forms.ValidationError("La cedula esta incorrecta")
+
+        qs = Empleados.objects.filter(cedula__contains=cedula)
+        if qs.exists():
+            raise forms.ValidationError("Ya existe un empleado con esta cedula")
+
+
+        return cedula
+                  
+      
 
 
 
