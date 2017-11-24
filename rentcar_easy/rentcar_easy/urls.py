@@ -24,7 +24,7 @@ from rentcar.views import form_marca_view, form_modelo_view,form_tiposcombustibl
 from rentcar.views import form_clientes_view,form_empleados_view, testViewTableJson, MarcasUpdateView,MarcasDeleteView, VehiculosUpdateView, VehiculosDeleteView
 from rentcar.views import ModelosUpdateView,ModelosDeleteView,TiposCombustiblesUpdateView,TiposCombustiblesDeleteView,TiposVehiculosUpdateView,TiposVehiculosDeleteView
 from rentcar.views import RerservacionesUpdateView, RerservacionesDeleteView, ClientesUpdateView, ClientesDeleteView, EmpleadosUpdateView, EmpleadosDeleteView
-from rentcar.views import FilteredVehiculoListView,print_marcas, generar_pdf_marcas,generar_pdf_clientes, generar_pdf_modelos
+from rentcar.views import FilteredVehiculoListView,print_marcas, generar_pdf_marcas,generar_pdf_clientes, generar_pdf_modelos, generar_pdf_vehiculos,generar_pdf_tiposvehiculos,generar_pdf_tiposcombustibles,generar_pdf_empleados
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -48,15 +48,18 @@ urlpatterns = [
     url(r'^tiposcombustibles/create/$',form_tiposcombustibles_view),
     url(r'^tiposcombustibles/update/(?P<pk>[0-9]+)$', TiposCombustiblesUpdateView.as_view(), name ="tipocombustible-update"),
     url(r'^tiposcombustibles/delete/(?P<pk>[0-9]+)$', TiposCombustiblesDeleteView.as_view(), name ="tipocombustible-delete"),
+    url(r'^tiposcombustibles/report/$',generar_pdf_tiposcombustibles),
     url(r'^tiposvehiculos/$',TipoVehiculosViewTable),
     url(r'^tiposvehiculos/create/$',form_tiposvehiculos_view),
     url(r'^tiposvehiculos/update/(?P<pk>[0-9]+)$', TiposVehiculosUpdateView.as_view(), name ="tipovehiculo-update"),
     url(r'^tiposvehiculos/delete/(?P<pk>[0-9]+)$', TiposVehiculosDeleteView.as_view(), name ="tipovehiculo-delete"),
+    url(r'^tiposvehiculos/report/$',generar_pdf_tiposvehiculos),
     url(r'^vehiculos/$',VehiculosViewTable),
     url(r'^vehiculos/list/$',FilteredVehiculoListView),
     url(r'^vehiculos/create/$',form_vehiculos_view),
     url(r'^vehiculos/update/(?P<pk>[0-9]+)$', VehiculosUpdateView.as_view(), name ="vehiculo-update"),
     url(r'^vehiculos/delete/(?P<pk>[0-9]+)$', VehiculosDeleteView.as_view(), name ="vehiculo-delete"),
+    url(r'^vehiculos/report/$',generar_pdf_vehiculos),
     url(r'^clientes/$',ClientesViewTable),
     url(r'^clientes/create/$',form_clientes_view),
     url(r'^clientes/update/(?P<pk>[0-9]+)$', ClientesUpdateView.as_view(), name ="cliente-update"),
@@ -66,6 +69,7 @@ urlpatterns = [
     url(r'^empleados/create/$',form_empleados_view),
     url(r'^empleados/update/(?P<pk>[0-9]+)$', EmpleadosUpdateView.as_view(), name ="empleado-update"),
     url(r'^empleados/delete/(?P<pk>[0-9]+)$', EmpleadosDeleteView.as_view(), name ="empleado-delete"),
+    url(r'^empleados/report/$',generar_pdf_empleados),
     url(r'^reservaciones/$',ReservacionesViewTable),
     url(r'^reservaciones/create/$',form_reservaciones_view),
     url(r'^reservaciones/update/(?P<pk>[0-9]+)$', RerservacionesUpdateView.as_view(), name ="reservacion-update"),

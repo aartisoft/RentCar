@@ -1,7 +1,6 @@
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import CreateView
@@ -33,7 +32,6 @@ from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.lib.styles import ParagraphStyle
-
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 
@@ -818,11 +816,10 @@ def generar_pdf_modelos(request):
 
 
 
-
-def generar_pdf_marcas(request):
+def generar_pdf_vehiculos(request):
     print ("Genero el PDF")
     response = HttpResponse(content_type='application/pdf')
-    pdf_name = "marcas.pdf"  # llamado clientes
+    pdf_name = "vehiculos.pdf"  # llamado clientes
     # la linea 26 es por si deseas descargar el pdf a tu computadora
     # response['Content-Disposition'] = 'attachment; filename=%s' % pdf_name
     buff = BytesIO()
@@ -835,12 +832,52 @@ def generar_pdf_marcas(request):
                             )
     clientes = []
     styles = getSampleStyleSheet()
-    header = Paragraph("Listado de Marcas de Vehiculos", styles['Heading2'])
+    header = Paragraph("Listado de Vehiculos", styles['Heading2'])
     clientes.append(header)
     linea = Paragraph("_________________________________________________________________", styles['Heading2'])
     clientes.append(linea)
-    headings = ('Nombre ')
-    allmarcas = [(p.nombre) for p in Marcas.objects.all()]
+    headings = ('Descripcion','Modelo','No. Chasis','No. Motor','No. Placa','Anio','Color','Tipo','Tarifa')
+    allmarcas = [(p.descripcion,p.modelo,p.no_chasis,p.no_motor,p.no_placa,p.anio,p.color,p.tipo,"{0:.2f}".format(float(p.tarifa))) for p in Vehiculo.objects.all()]
+    print (allmarcas)
+
+    t = Table([headings] + allmarcas)
+    t.setStyle(TableStyle(
+        [
+            ('GRID', (0, 0), (8, -1), 1, colors.black),
+            ('LINEBELOW', (0, 0), (-1, 0), 2, colors.black),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+            ('LINEABOVE', (0,1), (-1,-1), 0.25, colors.gray)
+            
+        ]
+    ))
+    clientes.append(t)
+    doc.build(clientes)
+    response.write(buff.getvalue())
+    buff.close()
+    return response
+
+def generar_pdf_tiposvehiculos(request):
+    print ("Genero el PDF")
+    response = HttpResponse(content_type='application/pdf')
+    pdf_name = "tiposvehiculos.pdf"  # llamado clientes
+    # la linea 26 es por si deseas descargar el pdf a tu computadora
+    # response['Content-Disposition'] = 'attachment; filename=%s' % pdf_name
+    buff = BytesIO()
+    doc = SimpleDocTemplate(buff,
+                            pagesize=letter,
+                            rightMargin=40,
+                            leftMargin=40,
+                            topMargin=60,
+                            bottomMargin=18,
+                            )
+    clientes = []
+    styles = getSampleStyleSheet()
+    header = Paragraph("Listado de los Tipos de Vehiculos", styles['Heading2'])
+    clientes.append(header)
+    linea = Paragraph("_________________________________________________________________", styles['Heading2'])
+    clientes.append(linea)
+    headings = ('Nombre                                                                        ','Descripcion                                                                        ')
+    allmarcas = [(p.nombre,p.descripcion) for p in TiposVehiculos.objects.all()]
     print (allmarcas)
 
     t = Table([headings] + allmarcas)
@@ -858,3 +895,126 @@ def generar_pdf_marcas(request):
     response.write(buff.getvalue())
     buff.close()
     return response
+
+def generar_pdf_marcas(request):
+    print ("Genero el PDF")
+    response = HttpResponse(content_type='application/pdf')
+    pdf_name = "marcas.pdf"  # llamado clientes
+    # la linea 26 es por si deseas descargar el pdf a tu computadora
+    # response['Content-Disposition'] = 'attachment; filename=%s' % pdf_name
+    buff = BytesIO()
+    doc = SimpleDocTemplate(buff,
+                            pagesize=letter,
+                            rightMargin=40,
+                            leftMargin=40,
+                            topMargin=60,
+                            bottomMargin=18,
+                            )
+    clientes = []
+    styles = getSampleStyleSheet()
+    header = Paragraph("Listado de las Marcas de los Vehiculos", styles['Heading2'])
+    clientes.append(header)
+    linea = Paragraph("_________________________________________________________________", styles['Heading2'])
+    clientes.append(linea)
+    headings = ('Nombre                                                                                                     ','Fecha de Creacion')
+    allmarcas = [(p.nombre,p.create_at.strftime('%m/%d/%Y')) for p in Marcas.objects.all()]
+    print (allmarcas)
+
+    t = Table([headings] + allmarcas)
+    t.setStyle(TableStyle(
+        [
+            ('GRID', (0, 0), (2, -1), 1, colors.black),
+            ('LINEBELOW', (0, 0), (-1, 0), 2, colors.black),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+            ('LINEABOVE', (0,1), (-1,-1), 0.25, colors.gray)
+            
+        ]
+    ))
+    clientes.append(t)
+    doc.build(clientes)
+    response.write(buff.getvalue())
+    buff.close()
+    return response
+
+
+def generar_pdf_tiposcombustibles(request):
+    print ("Genero el PDF")
+    response = HttpResponse(content_type='application/pdf')
+    pdf_name = "tiposcombustibles.pdf"  # llamado clientes
+    # la linea 26 es por si deseas descargar el pdf a tu computadora
+    # response['Content-Disposition'] = 'attachment; filename=%s' % pdf_name
+    buff = BytesIO()
+    doc = SimpleDocTemplate(buff,
+                            pagesize=letter,
+                            rightMargin=40,
+                            leftMargin=40,
+                            topMargin=60,
+                            bottomMargin=18,
+                            )
+    clientes = []
+    styles = getSampleStyleSheet()
+    header = Paragraph("Listado de los Tipos de Combustibles", styles['Heading2'])
+    clientes.append(header)
+    linea = Paragraph("_________________________________________________________________", styles['Heading2'])
+    clientes.append(linea)
+    headings = ('Nombre                                                                        ','Descripcion                                                                        ')
+    allmarcas = [(p.nombre,p.descripcion) for p in TiposCombustibles.objects.all()]
+    print (allmarcas)
+
+    t = Table([headings] + allmarcas)
+    t.setStyle(TableStyle(
+        [
+            ('GRID', (0, 0), (2, -1), 1, colors.black),
+            ('LINEBELOW', (0, 0), (-1, 0), 2, colors.black),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+            ('LINEABOVE', (0,1), (-1,-1), 0.25, colors.gray)
+            
+        ]
+    ))
+    clientes.append(t)
+    doc.build(clientes)
+    response.write(buff.getvalue())
+    buff.close()
+    return response
+
+
+def generar_pdf_empleados(request):
+    print ("Genero el PDF")
+    response = HttpResponse(content_type='application/pdf')
+    pdf_name = "clientes.pdf"  # llamado clientes
+    # la linea 26 es por si deseas descargar el pdf a tu computadora
+    # response['Content-Disposition'] = 'attachment; filename=%s' % pdf_name
+    buff = BytesIO()
+    doc = SimpleDocTemplate(buff,
+                            pagesize=letter,
+                            rightMargin=40,
+                            leftMargin=40,
+                            topMargin=60,
+                            bottomMargin=18,
+                            )
+    clientes = []
+    styles = getSampleStyleSheet()
+    header = Paragraph("Listado de Empleados ", styles['Heading2'])
+    clientes.append(header)
+    linea = Paragraph("_________________________________________________________________", styles['Heading2'])
+    clientes.append(linea)
+    headings = ('Nombre', 'Cedula', 'Telefono', 'Fecha de Nacimiento','Fecha de Ingreso','Comision')
+    allclientes = [(p.nombre, p.cedula, p.telefono, p.fecha_nacimiento, p.fecha_ingreso, "{0:.2f}".format(float(p.comision))) for p in Empleados.objects.all()]
+    print (allclientes)
+
+    t = Table([headings] + allclientes)
+    t.setStyle(TableStyle(
+        [
+            ('GRID', (0, 0), (5, -1), 1, colors.black),
+            ('LINEBELOW', (0, 0), (-1, 0), 2, colors.black),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+            ('LINEABOVE', (0,1), (-1,-1), 0.25, colors.gray)
+        ]
+    ))
+    clientes.append(t)
+    doc.build(clientes)
+    response.write(buff.getvalue())
+    buff.close()
+    return response
+
+
