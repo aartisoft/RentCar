@@ -17,8 +17,10 @@ from django.views.generic.edit import CreateView,UpdateView,DeleteView
 from django_tables2.utils import A
 from django.urls import reverse_lazy
 # from django_filters import FilterView
+from django_filters.views import FilterView
 import django_filters
 from django_tables2.views import SingleTableMixin
+from .filters import MarcaFilter
 import django_tables2 as tables
 import json
 from reportlab.lib import colors
@@ -29,11 +31,12 @@ from reportlab.pdfbase.ttfonts import TTFont
 from django.conf import settings
 from reportlab.lib.enums import TA_RIGHT
 from reportlab.pdfgen.canvas import Canvas
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.styles import getSampleStyleSheet ,ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
+from .utils import PagedFilteredTableView
+
 
 
 
@@ -51,6 +54,9 @@ class MarcarTable(tables.Table):
         attrs = {'class': 'table table-striped table-bordered'}
  
 def MarcasViewTable(request):
+
+    print(request)
+
     table = MarcarTable(Marcas.objects.all())
 
     table.order_by = 'create_at'
@@ -390,6 +396,7 @@ class  VehiculosTable(tables.Table):
         attrs = {'class': 'table table-striped table-bordered'}
  
 def VehiculosViewTable(request):
+    
     table = VehiculosTable(Vehiculo.objects.all())
     table.paginate(page=request.GET.get('page', 1), per_page=10)
     return render(request, 'vehiculos/list.html', {'table': table})
@@ -625,25 +632,110 @@ class EmpleadosDeleteView(DeleteView):
     
 
 
-def testViewTableJson(request):
 
-    data =  json.loads({"nombre":"Lucia"})
+class MarcasFilter(django_filters.FilterSet):
+     nombre= django_filters.CharFilter(name="nombre",lookup_expr='icontains',label = "Nombre")
+    
+    # class Meta:
+    #     model = Marcas
+    #     fields = ['nombre']
 
-    print(json.dumps(data))
-    return JsonResponse(json.dumps(data))
+class FilteredMarcasListView(SingleTableMixin, FilterView):
+    table_class = MarcarTable
+    model = Marcas
+    template_name = 'marcas/list.html'
+    filterset_class = MarcasFilter
 
+
+class ModelosFilter(django_filters.FilterSet):
+    nombre= django_filters.CharFilter(name="nombre",lookup_expr='icontains',label = "Nombre")
+    
+    class Meta:
+        model = Modelos
+        fields = ['nombre','marca']
+
+class FilteredModelosListView(SingleTableMixin, FilterView):
+    table_class = ModeloTable
+    model = Modelos
+    template_name = 'modelos/list.html'
+    filterset_class = ModelosFilter
+
+
+class TiposVehiculosFilter(django_filters.FilterSet):
+    nombre = django_filters.CharFilter(name="nombre",lookup_expr='icontains',label = "Nombre")
+
+    class Meta:
+        model = TiposVehiculos
+        fields = ['nombre']
+
+class FilteredTiposVehiculosListView(SingleTableMixin, FilterView):
+    table_class = TipoVehiculosTable
+    model = TiposVehiculos
+    template_name = 'tiposvehiculos/list.html'
+    filterset_class = TiposVehiculosFilter
+
+class TiposCombustiblesFilter(django_filters.FilterSet):
+    nombre = django_filters.CharFilter(name="nombre",lookup_expr='icontains',label = "Nombre")
+
+    class Meta:
+        model = TiposCombustibles
+        fields = ['nombre']
+
+class FilteredTiposCombustiblesListView(SingleTableMixin, FilterView):
+    table_class = TipoCombustibleTable
+    model = TiposCombustibles
+    template_name = 'tiposcombustibles/list.html'
+    filterset_class = TiposCombustiblesFilter
 
 
 class VehiculoFilter(django_filters.FilterSet):
+    descripcion= django_filters.CharFilter(name="descripcion",lookup_expr='icontains',label = "Descripcion")
+    
     class Meta:
         model = Vehiculo
-        fields = ['modelo']
+        fields = ['descripcion','tipo','combustible','anio']
 
-class FilteredVehiculoListView(SingleTableMixin):
+class FilteredVehiculoListView(SingleTableMixin, FilterView):
     table_class = VehiculosTable
     model = Vehiculo
-    template_name = 'vehiculos/test_list.html'
+    template_name = 'vehiculos/list.html'
     filterset_class = VehiculoFilter
+
+
+
+class ClientesFilter(django_filters.FilterSet):
+    nombre = django_filters.CharFilter(name="nombre",lookup_expr='icontains',label = "Nombre")
+    cedula = django_filters.CharFilter(name="cedula",lookup_expr='icontains',label = "Cedula")
+ 
+    class Meta:
+        model = Clientes
+        fields = ['nombre','cedula','tipo_persona','sexo']
+
+class FilteredClientesListView(SingleTableMixin, FilterView):
+    table_class = ClientesTable
+    model = Clientes
+    template_name = 'clientes/list.html'
+    filterset_class = ClientesFilter
+
+class ReservacionesFilter(django_filters.FilterSet):
+    # nombre = django_filters.CharFilter(name="nombre",lookup_expr='icontains',label = "Nombre")
+    # cedula = django_filters.CharFilter(name="cedula",lookup_expr='icontains',label = "Cedula")
+ 
+    class Meta:
+        model = Rerservaciones
+        fields = ['vehiculo','cliente','empleado']
+
+
+class FilteredReservacionesListView(SingleTableMixin, FilterView):
+    table_class = ReservacionesTable
+    model = Rerservaciones
+    template_name = 'reservaciones/list.html'
+    filterset_class = ReservacionesFilter
+
+
+
+
+
 
 
 
@@ -1018,3 +1110,31 @@ def generar_pdf_empleados(request):
     return response
 
 
+# def JsonTableAjax(request):
+
+
+#     retun 
+
+def testViewTableJson(request):
+
+    # data =  json.loads({"nombre":"Lucia"})
+
+    # print(json.dumps(data))
+    return JsonResponse({"data": [{
+      "id": "1",
+      "name": "Tiger Nixon",    
+      "position": "System Architect",
+      "salary": "$320,800",
+      "start_date": "2011/04/25",
+      "office": "Edinburgh",
+      "extn": "5421"
+    },
+    {
+      "id": "2",
+      "name": "Garrett Winters",
+      "position": "Accountant",
+      "salary": "$170,750",
+      "start_date": "2011/07/25",
+      "office": "Tokyo",
+      "extn": "8422"
+    }]})

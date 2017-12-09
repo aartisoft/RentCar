@@ -4,6 +4,7 @@ from .utils import validar_cedula,validar_tarjeta
 from django import forms
 #from django.core.exceptions import 
 from django.forms import ModelForm
+from crispy_forms.helper import FormHelper
 
 # class MarcasForm(forms.Form):
 #     nombre = forms.CharField(required=True, max_length=25)
@@ -73,14 +74,17 @@ class TiposVehiculosForm(ModelForm):
             'class':'form-control m-input'})
 
 class VehiculosForm(ModelForm):
+ 
+
     class Meta:
         model = Vehiculo
         exclude = ('updated', 'created','user')
-
+        form_tag = False
 
     def __init__(self, *args, **kwargs):
         
         super(VehiculosForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
 
 
         YEAR_CHOICES = (

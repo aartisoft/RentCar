@@ -38,8 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rentcar',
-    'django_tables2',
+    'bootstrap4',
     'django_filters',
+    'django_tables2',
+    'crispy_forms',
+    
+   
 ]
 
 MIDDLEWARE = [
@@ -70,6 +74,8 @@ TEMPLATES = [
         },
     },
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap'
 
 STATIC_URL = '/static/'
 
